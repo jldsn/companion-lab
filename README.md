@@ -1,102 +1,106 @@
-# Companion Lab — revisão v4
+# Companion Lab
 
-CIN0055 — Tendências em Mídia e Interação · CIn/UFPE.
+Protótipo web experimental sobre companheiros digitais e IA afetiva, desenvolvido para a disciplina **CIN0055 — Tendências em Mídia e Interação**, do Centro de Informática da Universidade Federal de Pernambuco (CIn/UFPE).
 
-Esta revisão parte do **v2 completo + patch Gemini recebido**. Conserva os cenários, os dois estilos, o consentimento, os questionários e a ordem aleatória. A interface continua mostrando somente A e B. O limite permanece em **quatro mensagens concluídas por rodada**, com encerramento permitido a partir de duas.
+## Proposta
 
-## Comece aqui no Windows
+Como duas estratégias relacionais, executadas pelo mesmo modelo de linguagem, influenciam a sensação de ser compreendido, a reconsideração da interpretação inicial e a confiança no companheiro durante uma interação breve?
 
-Você já instalou o Node.js. Não é necessário reinstalar nem executar `npm install`.
+O Companion Lab permite explorar essa pergunta por meio de conversas sobre uma situação social fictícia. Cada participante interage com dois companheiros, apresentados apenas como **A** e **B**, cuja ordem é sorteada a cada sessão:
 
-1. Pare o servidor antigo com **Ctrl+C**. Extraia este ZIP em uma pasta nova, para manter a versão anterior e seus dados como cópia de segurança.
-2. Copie **somente o seu `.env` local** da versão anterior para a nova pasta `companion-lab`, ao lado de `server.mjs`. Não compartilhe esse arquivo. Não substitua sua chave pelo campo vazio de `.env.example`.
-3. Abra o PowerShell nessa nova pasta e execute:
+- **Validante:** reconhece emoções e explora a interpretação inicial de maneira acolhedora.
+- **Questionador:** ajuda a separar fatos de inferências, examina pressupostos e apresenta alternativas plausíveis.
+
+Os dois estilos usam o mesmo modelo e os mesmos parâmetros de geração; a diferença está nas instruções relacionais. Trata-se de um estudo exploratório com autorrelatos e uma amostra pequena, sem pretensão de demonstrar efeitos psicológicos universais.
+
+## Fluxo da experiência
+
+1. Leitura do aviso de participação, consentimento e escolha de um cenário fictício.
+2. Registro da interpretação inicial, confiança e clareza.
+3. Conversa com o Companheiro A: de duas a quatro trocas concluídas.
+4. Avaliação da primeira conversa.
+5. Conversa com o Companheiro B e nova avaliação.
+6. Comparação final e encerramento.
+
+A leitura inicial é registrada como questionário; não é enviada automaticamente como primeira mensagem do chat.
+
+## Executar localmente
+
+O projeto utiliza Node.js e seus módulos nativos, sem dependências npm para o funcionamento básico. É necessário ter Node.js instalado, com suporte a `fetch`.
+
+Baixe o repositório em **Code → Download ZIP**, extraia os arquivos e abra o PowerShell na pasta que contém `server.mjs`.
+
+Crie sua configuração local:
+
+```powershell
+Copy-Item .env.example .env
+notepad .env
+```
+
+No `.env`, preencha `GEMINI_API_KEY` com sua chave local. A configuração usada no ensaio concluído foi:
+
+```dotenv
+AI_PROVIDER=gemini
+GEMINI_API_KEY=
+GEMINI_MODEL=gemini-3.5-flash-lite
+PORT=3000
+AI_TIMEOUT_MS=60000
+GEMINI_MAX_OUTPUT_TOKENS=2048
+```
+
+A linha da chave está vazia neste exemplo intencionalmente. Nunca publique seu `.env`.
+
+Inicie o servidor:
 
 ```powershell
 node server.mjs
 ```
 
-Abra **http://localhost:3000**. Recarregue uma página que já estivesse aberta para carregar a interface nova. O terminal deve informar o provedor/modelo ou que o MOCK está ativo. A indicação de modelo confirma a configuração; somente receber uma resposta confirma uma geração bem-sucedida.
+Abra [http://localhost:3000](http://localhost:3000). Confira o modo e o modelo indicados na página antes de iniciar. Para parar, pressione **Ctrl+C** no terminal. Reinicie o servidor após alterar o `.env`.
 
-A versão nova fornece todos os arquivos do projeto. Os arquivos com correções são `server.mjs`, `public/app.js`, `public/index.html`, `public/styles.css`, `export_csv.mjs`, `.env.example`, `README.md` e `PROJETO.md`. Há também `CORRECOES_E_TESTES.md` e a pasta `tests`. `REGISTRO.md`, `ROTEIRO_TESTE.md` e `.gitignore` foram conservados do v2. A pasta `data` vem vazia; mantenha dados antigos na pasta anterior.
+A configuração acima define espera de até 60 segundos pelo provedor, com margem adicional de 10 segundos no navegador. Sem `AI_TIMEOUT_MS`, o padrão do código é 30 segundos. Use o `.env` para reproduzir a configuração validada, inclusive o modelo; o padrão interno do servidor pode ser diferente.
 
-## Teste curto com sua configuração Gemini
+## Falhas e recuperação
 
-Use só o cenário fictício “Trabalho em grupo”, com um código de teste como `TESTE01`.
+Tentativas malsucedidas não avançam o contador nem acrescentam trocas concluídas ao histórico. O texto é preservado e a página informa o erro. Não há repetição automática de geração nem troca automática para MOCK após falha da API.
 
-- Marque o consentimento e registre uma interpretação inicial.
-- Na conversa A, envie: **Acho que ele não confia no meu trabalho.**
-- Espere uma resposta completa. O contador deve passar de 0 para 1, e o campo deve ficar disponível para a próxima mensagem.
+Se a conexão se perder e o resultado do envio ficar incerto, use **Tentar novamente** antes de editar a mensagem ou mudar de rodada. Enquanto o servidor continuar ativo, uma resposta já concluída pode ser recuperada sem outra geração.
 
-Se houver erro, o texto é preservado e aparece uma explicação na página. Não é necessário revelar a chave. Para relatar um problema, envie somente a mensagem de erro visível e diga em qual rodada/contador ocorreu.
+Respostas identificadas como incompletas ou bloqueadas não são exibidas como normais. A checagem de pontuação final é uma heurística: não garante completude semântica. Cancelar a espera também não garante que o provedor deixou de processar a solicitação ou consumir cota.
 
-Após esse primeiro teste, complete as duas rodadas: envie quatro mensagens em A, avalie, envie quatro em B, avalie e finalize. A quinta mensagem não deve ser aceita; a rodada B deve começar em 0/4, com o campo habilitado. Os dados desse ensaio são dados de teste: não os trate como respostas de participantes.
+## Privacidade e registros
 
-## Recuperação de falhas
+Use somente os cenários fictícios. Não insira nomes reais, dados sensíveis ou conflitos pessoais. A participação é voluntária; fechar a página interrompe o uso, mas não apaga registros anteriores.
 
-- **Espera:** o servidor encerra a espera do provedor em 30 segundos. O navegador tem um prazo de 40 segundos para receber a resposta do servidor. A página informa que está aguardando.
-- **Enquanto aguarda:** envio, edição e mudança de rodada ficam bloqueados para evitar concorrência.
-- **Erro conhecido da API:** nada é acrescentado ao histórico nem ao contador. O texto fica no campo e o botão permite nova tentativa.
-- **Conexão perdida ou timeout do navegador:** o campo fica temporariamente bloqueado com o texto preservado. Use **Tentar novamente** para recuperar o mesmo envio antes de editar ou mudar de rodada. Se o servidor já havia concluído, ele devolve a resposta guardada sem outra geração.
-- **Cota (429):** aguarde antes de repetir. O responsável deve consultar a cota do projeto no AI Studio. Não há tentativas automáticas.
-- **Permissão ou configuração:** confira o projeto/modelo localmente. Gerar uma nova chave não é uma solução automática para restrições do projeto.
-- **Servidor reiniciado:** sessões em andamento deixam de existir na memória. Recarregue a página e comece uma nova sessão; não trate a sessão interrompida como concluída.
+No modo Gemini, o cenário e as mensagens são enviados ao Google. As condições aplicáveis ao uso do conteúdo devem ser consultadas nos termos do provedor; a documentação da camada gratuita informa uso para melhoria de produtos.
 
-Cancelar a espera não garante que o provedor tenha deixado de processar a solicitação já enviada; ela ainda pode consumir cota. A proteção de repetição vale enquanto este processo do servidor estiver ativo.
+Conversas, avaliações, ordem dos estilos e informações de origem são gravadas no computador que hospeda o servidor, em `data/session-events.jsonl`. Códigos de participante não garantem anonimato dos textos.
 
-O servidor não troca para MOCK após erro da API. Ao iniciar sem chave para o provedor selecionado, ele usa MOCK e informa isso explicitamente na página e no terminal. Confira sempre o modo antes de começar a coleta.
-
-## Configuração opcional
-
-A chave continua somente no `.env` do computador que hospeda o servidor. Exemplo sem segredo:
-
-```dotenv
-AI_PROVIDER=gemini
-GEMINI_API_KEY=
-GEMINI_MODEL=gemini-3.8-flash
-PORT=3000
-# MOCK_MODE=1
-# AI_TIMEOUT_MS=30000
-# GEMINI_MAX_OUTPUT_TOKENS=2048
-```
-
-O orçamento de 2048 tokens inclui raciocínio e saída visível. É uma margem para evitar cortes, não uma meta de tamanho nem uma garantia de resposta completa. As instruções continuam pedindo normalmente duas a cinco frases. O raciocínio permanece em `low`; `includeThoughts: false` impede pedir a exposição do raciocínio, mas não desativa o raciocínio interno. `MAX_TOKENS`, bloqueios, ausência de texto e finais aparentemente cortados não são mostrados como respostas normais. A checagem de pontuação final é uma heurística: pode rejeitar uma resposta válida sem pontuação e não comprova completude semântica.
-
-Os dois estilos usam o mesmo modelo e os mesmos parâmetros. Não mude a configuração no meio da coleta sem registrar uma nova iteração.
-
-## Privacidade e dados
-
-Use somente o cenário fictício. Não escreva nomes reais, dados pessoais, informações sensíveis nem conflitos pessoais. A participação é voluntária. Fechar a página interrompe a participação, mas não apaga o que já foi registrado.
-
-Em Gemini, as mensagens e o cenário são enviados ao Google. A documentação da camada gratuita informa uso de conteúdo para melhorar produtos. Os registros locais contêm conversas, avaliações, código do participante e ordem experimental; códigos não garantem anonimato dos textos.
-
-Os dados ficam em `data/session-events.jsonl`. Para exportar no PowerShell:
+Para exportar:
 
 ```powershell
 node export_csv.mjs
 ```
 
-O resultado é `data/session-events.csv`, em UTF-8 com marcador para facilitar a abertura no Excel. O CSV mantém `mode`, `provider` e `model`, inclusive ao associar registros antigos ao início de suas sessões. Não misture MOCK e LLM na análise. Filtre também sessões incompletas e eventos de tentativa/erro; conte trocas concluídas pelos pares `chat_user`/`chat_assistant` com o mesmo `requestId`.
+O arquivo `data/session-events.csv` preserva modo, provedor e modelo. Separe sessões de teste, sessões incompletas e sessões MOCK dos dados coletados com participantes. Eventos de tentativa e erro não representam trocas concluídas.
 
-`chat_attempt` registra uma tentativa sem copiar o texto; `chat_error` registra o tipo de falha. Só trocas concluídas gravam `chat_user` e `chat_assistant`. Uma nova tentativa usa o mesmo `requestId`, com número `attempt` crescente. Os registros antigos podem ter outro formato e mensagens sem resposta; não devem ser reinterpretados como trocas concluídas.
+Não publique `.env`, arquivos JSONL ou CSV. O `.gitignore` não protege arquivos enviados manualmente pelo navegador.
 
-Não inclua `.env`, JSONL ou CSV em ZIPs compartilhados. O `.gitignore` só protege contra inclusões acidentais no Git, não remove arquivos de pacotes criados manualmente.
+## Modo MOCK
 
-## Plano B: apenas usabilidade
+Para testar somente a usabilidade, acrescente `MOCK_MODE=1` ao `.env` e reinicie o servidor. As respostas serão pré-programadas, sem geração por LLM. A página identifica esse modo; ele também é usado ao iniciar sem uma chave para o provedor selecionado.
 
-Se a API falhar persistentemente, avise os participantes, pare o servidor com **Ctrl+C** e abra o `.env` local:
+Após uma mudança de modo, inicie novas sessões e avise os participantes. Dados MOCK não permitem conclusões sobre o comportamento de uma LLM.
 
-```powershell
-notepad .env
-```
+## Validação e limitações
 
-Adicione uma única linha `MOCK_MODE=1`, salve e execute novamente `node server.mjs`. Peça que todos recarreguem a página e iniciem **novas sessões**. Confirme o aviso MOCK. As respostas serão pré-programadas: use esse teste somente para avaliar interface e questionários, sem conclusões sobre comportamento de uma LLM. Para voltar ao Gemini, remova ou comente essa linha e reinicie.
+- Sete testes automatizados passaram com Node v24.22.1: servidor, fluxo da interface em DOM simulado, falhas, recuperação, concorrência e exportação. Esses testes não utilizam uma API externa.
+- Em 28/10/2026, foi concluído um ensaio manual no Windows com Gemini real (`gemini-3.5-flash-lite`): quatro trocas em cada rodada, avaliações, comparação final e exportação CSV. Uma falha de geração foi recuperada sem duplicar as trocas concluídas.
+- O `gemini-3.8-flash` apresentou timeouts nos testes anteriores. A causa desses timeouts não foi determinada.
+- Acesso externo, uso simultâneo por participantes e capacidade sob carga ainda não foram validados.
+- Sessões ativas e respostas recuperáveis ficam em memória. Reiniciar o servidor interrompe essas sessões, embora os eventos já gravados permaneçam em disco.
 
-Se o acesso externo falhar, prefira demonstração local ou avaliação guiada. Só configure um túnel depois de completar o teste local. Uma URL temporária é acessível a qualquer pessoa que a conheça; limite sua circulação à turma e encerre o túnel após a atividade. Esta revisão não cria nem publica um túnel.
-
-## Testes incluídos
-
-No PowerShell, na pasta do projeto:
+Para executar os testes automatizados:
 
 ```powershell
 node --check server.mjs
@@ -104,17 +108,25 @@ node --check public/app.js
 node --test tests/server.test.mjs tests/interface.test.mjs
 ```
 
-Os testes usam somente módulos nativos do Node, executam em pastas temporárias e não leem seu `.env` nem chamam provedores externos. Foram executados com Node v24.22.1. Os testes da interface usam um **DOM simulado**, sem renderização de navegador; não substituem a conferência visual no Windows. Veja `CORRECOES_E_TESTES.md`.
+## Acesso por outros dispositivos
 
-## Fontes oficiais consultadas
+O endereço `localhost` funciona no computador que executa o servidor. Colocar o código no GitHub não hospeda a aplicação.
 
-- Modelo: https://ai.google.dev/gemini-api/docs/models/gemini-3.8-flash
-- Parâmetros REST: https://ai.google.dev/api/generate-content
-- Raciocínio e tokens: https://ai.google.dev/gemini-api/docs/generate-content/thinking
-- Preços e uso do conteúdo: https://ai.google.dev/gemini-api/docs/pricing
-- Cotas: https://ai.google.dev/gemini-api/docs/rate-limits
-- Erros: https://ai.google.dev/gemini-api/docs/troubleshooting
+Antes de disponibilizar acesso externo, teste o fluxo no dispositivo de um participante. Se usar um túnel temporário, qualquer pessoa com a URL poderá acessar; restrinja sua circulação à turma e encerre o túnel após a atividade. O servidor não possui proteção completa contra uso externo indevido.
 
-O modelo e o nível `low` constam na documentação. O acesso e a cota efetiva do seu projeto não foram verificados por uma chamada real. Limites de requisições por minuto, tokens por minuto e requisições por dia são compartilhados pelo projeto e variam por modelo/conta; não é possível prometer um número de participantes simultâneos pela indicação “nível gratuito”. Consulte os limites ativos no Google AI Studio sem habilitar cobrança para este teste.
+## Documentação do projeto
 
-O estudo é exploratório com uma amostra pequena e autorrelatos; não demonstra efeitos psicológicos universais nem substitui orientações acadêmicas do professor.
+- [PROJETO.md](PROJETO.md): pergunta de investigação e desenho exploratório.
+- [ROTEIRO_TESTE.md](ROTEIRO_TESTE.md): condução da atividade e plano alternativo.
+- [REGISTRO.md](REGISTRO.md): observações e decisões por iteração.
+- [CORRECOES_E_TESTES.md](CORRECOES_E_TESTES.md): histórico técnico da revisão v4 e validação automatizada anterior ao ensaio manual descrito acima.
+
+## Referências técnicas
+
+- [Modelos Gemini](https://ai.google.dev/gemini-api/docs/models)
+- [API de geração](https://ai.google.dev/api/generate-content)
+- [Raciocínio e tokens](https://ai.google.dev/gemini-api/docs/generate-content/thinking)
+- [Preços e uso do conteúdo](https://ai.google.dev/gemini-api/docs/pricing)
+- [Limites de uso](https://ai.google.dev/gemini-api/docs/rate-limits)
+
+A disponibilidade e as cotas dependem do projeto e devem ser conferidas no Google AI Studio. Uma consulta bem-sucedida à lista de modelos não garante que uma geração funcionará.

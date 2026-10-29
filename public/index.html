@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Companion Lab</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <div class="eyebrow">Tendências em Mídia e Interação · experimento</div>
+      <h1>Companion Lab</h1>
+      <p class="lead">Uma experiência sobre como diferentes estratégias relacionais de companheiros digitais influenciam nossa interpretação de situações ambíguas.</p>
+    </header>
+
+    <p id="app-status" role="status" aria-live="polite" aria-atomic="true"></p>
+
+    <section id="screen-start" class="card screen active">
+      <h2>Antes de começar</h2>
+      <p>Você vai conversar com dois companheiros digitais sobre uma <strong>situação fictícia</strong>. Não use nomes reais nem compartilhe informações pessoais ou sensíveis.</p>
+      <div class="notice">As duas versões têm comportamentos diferentes, mas isso só será explicado no final.</div>
+      <div id="privacy-note" class="privacy-note" role="note">As avaliações e os textos digitados são gravados localmente no computador que hospeda o protótipo. Não escreva nomes reais, dados pessoais ou relatos de conflitos seus. A participação é voluntária; você pode interromper a atividade fechando a página.</div>
+      <label class="consent-row"><input id="consent" type="checkbox" /> Li o aviso e concordo em participar desta atividade acadêmica.</label>
+      <label>Código do participante
+        <input id="participant-code" maxlength="24" placeholder="Ex.: P07" />
+      </label>
+      <label>Cenário
+        <select id="scenario-select"></select>
+      </label>
+      <button id="start-btn" disabled>Começar</button>
+      <p id="mode-note" class="muted"></p>
+    </section>
+
+    <section id="screen-pre" class="card screen">
+      <h2>Leitura inicial</h2>
+      <div id="scenario-pre" class="scenario"></div>
+      <label>Como você interpreta o que aconteceu?
+        <textarea id="pre-interpretation" rows="4" placeholder="Escreva brevemente sua leitura da situação."></textarea>
+      </label>
+      <div class="scale-block">
+        <label>Quão confiante você está nessa interpretação? <span id="pre-confidence-v">4</span>/7</label>
+        <input id="pre-confidence" type="range" min="1" max="7" value="4" />
+      </div>
+      <div class="scale-block">
+        <label>Quão clara a situação parece para você? <span id="pre-clarity-v">4</span>/7</label>
+        <input id="pre-clarity" type="range" min="1" max="7" value="4" />
+      </div>
+      <button id="pre-btn">Ir para a primeira conversa</button>
+    </section>
+
+    <section id="screen-chat" class="card screen chat-screen">
+      <div class="chat-head">
+        <div>
+          <div class="eyebrow" id="round-label">Rodada 1 de 2</div>
+          <h2 id="companion-name">Companheiro A</h2>
+        </div>
+        <div class="counter"><span id="msg-count">0</span>/<span id="max-msg-count">4</span> mensagens</div>
+      </div>
+      <details class="scenario-mini">
+        <summary>Rever situação</summary>
+        <div id="scenario-chat"></div>
+      </details>
+      <p id="chat-mode" class="muted"></p>
+      <p class="muted">Envie de duas a quatro mensagens por rodada. Cada resposta concluída conta como uma troca.</p>
+      <div id="chat-log" class="chat-log"></div>
+      <form id="chat-form" class="chat-form">
+        <textarea id="chat-input" rows="2" maxlength="2500" placeholder="Converse sobre como você está interpretando a situação..."></textarea>
+        <button type="submit">Enviar</button>
+      </form>
+      <button id="end-round-btn" class="secondary" disabled>Encerrar esta conversa</button>
+    </section>
+
+    <section id="screen-post" class="card screen">
+      <h2>Avaliação da conversa</h2>
+      <p id="post-title" class="lead-small"></p>
+      <div class="grid scales">
+        <label>Senti que o companheiro me compreendeu.<input class="post-scale" data-key="understood" type="range" min="1" max="7" value="4"><span>4/7</span></label>
+        <label>A conversa me fez reconsiderar minha interpretação.<input class="post-scale" data-key="reconsider" type="range" min="1" max="7" value="4"><span>4/7</span></label>
+        <label>Eu confiaria nesse companheiro para refletir sobre outra situação.<input class="post-scale" data-key="trust" type="range" min="1" max="7" value="4"><span>4/7</span></label>
+        <label>A conversa me deixou desconfortável ou irritado(a).<input class="post-scale" data-key="discomfort" type="range" min="1" max="7" value="4"><span>4/7</span></label>
+      </div>
+      <label>Como você interpreta a situação agora?
+        <textarea id="post-interpretation" rows="3"></textarea>
+      </label>
+      <fieldset>
+        <legend>Durante a conversa, você tentou fazer o companheiro concordar mais com você?</legend>
+        <label class="inline"><input type="radio" name="seeking" value="sim"> Sim</label>
+        <label class="inline"><input type="radio" name="seeking" value="nao"> Não</label>
+        <label class="inline"><input type="radio" name="seeking" value="nao_sei"> Não sei</label>
+      </fieldset>
+      <button id="post-btn">Continuar</button>
+    </section>
+
+    <section id="screen-final" class="card screen">
+      <h2>Comparação final</h2>
+      <p>Você conversou com duas versões do mesmo tipo de sistema. Agora compare a experiência sem tentar “acertar” qual era qual.</p>
+      <label>Qual conversa você preferiu?
+        <select id="preferred">
+          <option value="A">Companheiro A</option>
+          <option value="B">Companheiro B</option>
+          <option value="empate">Sem preferência</option>
+        </select>
+      </label>
+      <label>Qual deles mais fez você refletir?
+        <select id="reflective">
+          <option value="A">Companheiro A</option>
+          <option value="B">Companheiro B</option>
+          <option value="empate">Os dois igualmente</option>
+        </select>
+      </label>
+      <label>O que mais diferenciou as duas conversas para você?
+        <textarea id="final-comment" rows="4"></textarea>
+      </label>
+      <button id="finish-btn">Finalizar</button>
+    </section>
+
+    <section id="screen-done" class="card screen">
+      <h2>Obrigado!</h2>
+      <p>O experimento testa se diferentes estratégias relacionais de um companheiro digital — uma mais validante e outra mais questionadora — mudam a experiência de reflexão e a forma como a pessoa sustenta sua interpretação.</p>
+      <p class="muted">Seu código foi usado apenas para organizar os registros desta sessão.</p>
+    </section>
+  </main>
+  <script src="/app.js"></script>
+</body>
+</html>
